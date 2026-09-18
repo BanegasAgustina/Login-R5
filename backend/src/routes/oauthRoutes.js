@@ -46,7 +46,10 @@ router.get('/:provider', loginRateLimit, async (req, res) => {
     if (p.pkce) { url.searchParams.set('code_challenge', challenge(flow.verifier)); url.searchParams.set('code_challenge_method', 'S256'); }
     if (flow.nonce) url.searchParams.set('nonce', flow.nonce);
     return res.redirect(url.href);
-  } catch (error) { return fail(res, error); }
+  } catch (error) {
+    console.error('[OAuth error]', provider, error?.code || error?.message || 'UNKNOWN');
+    return fail(res, error);
+  }
 });
 
 // GET /api/auth/:provider/callback verifica state ANTES de intercambiar el código.
@@ -68,7 +71,10 @@ router.get('/:provider/callback', async (req, res) => {
     const token = createSessionToken(user);
     res.cookie(sessionCookie, token, cookieOptions());
     return res.redirect(303, `${frontendOrigin()}/login?oauth=success`);
-  } catch (error) { return fail(res, error); }
+  } catch (error) {
+    console.error('[OAuth callback error]', provider, error?.code || error?.message || 'UNKNOWN');
+    return fail(res, error);
+  }
 });
 
 export default router;
