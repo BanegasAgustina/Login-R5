@@ -36,10 +36,30 @@ export const frontendOrigin = () => origin(process.env.CLIENT_URL || 'http://loc
 export const backendOrigin = () => origin(process.env.BACKEND_URL || `http://localhost:${process.env.PORT || 3000}`);
 export const callbackURL = provider => `${backendOrigin()}/api/auth/${provider}/callback`;
 
+export function environmentStatus() {
+  const names = ['GOOGLE', 'GITHUB', 'FACEBOOK', 'DISCORD', 'TWITTER', 'TWITCH'];
+  return Object.fromEntries([
+    ...names.flatMap(name => [
+      [`${name}_CLIENT_ID`, Boolean(process.env[`${name}_CLIENT_ID`])],
+      [`${name}_CLIENT_SECRET`, Boolean(process.env[`${name}_CLIENT_SECRET`])],
+    ]),
+    ['FACEBOOK_GRAPH_VERSION', Boolean(process.env.FACEBOOK_GRAPH_VERSION)],
+    ['JWT_SECRET', Boolean(process.env.JWT_SECRET)],
+    ['CLIENT_URL', Boolean(process.env.CLIENT_URL)],
+    ['BACKEND_URL', Boolean(process.env.BACKEND_URL)],
+  ]);
+}
+
 // Un botón habilitado solo indica configuración presente, no credenciales verificadas.
 export function configured(provider) {
   const p = providers()[provider];
   if (!p || p.extraReady === false) return false;
   try { frontendOrigin(); backendOrigin(); } catch { return false; }
-  return Boolean(process.env[`${p.env}_CLIENT_ID`] && process.env[`${p.env}_CLIENT_SECRET`] && process.env.JWT_SECRET);
+  const status = {
+    clientId: Boolean(process.env[`${p.env}_CLIENT_ID`]),
+    clientSecret: Boolean(process.env[`${p.env}_CLIENT_SECRET`]),
+    jwt: Boolean(process.env.JWT_SECRET),
+  };
+  console.info('[OAuth configured]', provider, status);
+  return status.clientId && status.clientSecret && status.jwt;
 }

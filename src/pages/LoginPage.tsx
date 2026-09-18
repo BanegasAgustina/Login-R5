@@ -30,7 +30,11 @@ export default function LoginPage() {
   const { register, handleSubmit, formState: { errors } } = useForm<LoginData>();
   const { login, usuario, loading } = useAuth();
   const navigate = useNavigate();
-  const [error, setError] = useState(() => oauthErrors[new URLSearchParams(window.location.search).get('oauth_error') || ''] || '');
+  const [error, setError] = useState(() => {
+    const code = new URLSearchParams(window.location.search).get('oauth_error') || '';
+    if (import.meta.env.DEV && code) console.info('[OAuth] frontend error:', code);
+    return oauthErrors[code] || '';
+  });
   const [submitting, setSubmitting] = useState(false);
 
   if (loading) return <PageState type="loading" message="Verificando sesión…" />;

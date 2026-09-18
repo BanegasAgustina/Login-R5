@@ -18,6 +18,7 @@ export default function OAuthButtons() {
     api.get<Provider[]>('/auth/providers').then(({ data }) => {
       if (!active) return;
       setProviders(data.filter(p => Object.hasOwn(brands, p.id)));
+      if (import.meta.env.DEV) data.forEach(p => console.info(`[OAuth] ${p.name}: ${p.enabled ? 'enabled' : 'disabled'}`));
       setStatus(data.some(p => !p.enabled) ? 'Los proveedores deshabilitados necesitan configuración.' : '');
     }).catch(() => { if (active) setStatus('No se pudo consultar los proveedores. Podés usar email y contraseña.'); });
     return () => { active = false; };

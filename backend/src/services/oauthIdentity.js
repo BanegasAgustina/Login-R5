@@ -24,7 +24,7 @@ export async function externalIdentity(provider, code, flow) {
   const secret = process.env[`${p.env}_CLIENT_SECRET`];
   const body = new URLSearchParams({ grant_type: 'authorization_code', code, redirect_uri: callbackURL(provider), client_id: clientId });
   const headers = { Accept: 'application/json', 'Content-Type': 'application/x-www-form-urlencoded' };
-  if (p.basic) headers.Authorization = `Basic ${Buffer.from(`${encodeURIComponent(clientId)}:${encodeURIComponent(secret)}`).toString('base64')}`;
+  if (p.basic) headers.Authorization = `Basic ${Buffer.from(`${clientId}:${secret}`).toString('base64')}`;
   else body.set('client_secret', secret);
   if (p.pkce) body.set('code_verifier', flow.verifier);
   const tokens = await json(p.token, { method: 'POST', headers, body });
