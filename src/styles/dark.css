@@ -1,0 +1,71 @@
+/* Tema oscuro */
+html[data-theme='dark'] {
+  --bg: #0f211c;
+  --surface: #1a322c;
+  --ink: #eff8f4;
+  --muted: #a9beb6;
+  --line: #315047;
+  --brand: #55c8a2;
+  --brand-hover: #6dd4b3;
+  --brand-soft: #214b3f;
+  --danger: #e87878;
+  --danger-soft: #4a2828;
+  --warning-soft: #3d3420;
+  --shadow: 0 8px 28px rgba(0, 0, 0, 0.25);
+}
+
+html[data-theme='dark'] .auth-page {
+  background: linear-gradient(135deg, #142820, var(--bg));
+}
+
+html[data-theme='dark'] .login-image-caption {
+  background: rgba(10, 30, 25, 0.88);
+}
+
+html[data-theme='dark'] .badge-done {
+  background: #1a3d2e;
+  color: #6dd4a8;
+}
+
+html[data-theme='dark'] .badge-pending {
+  background: var(--warning-soft);
+  color: #e8b84a;
+}
+
+html[data-theme='dark'] tr:hover td {
+  background: rgba(85, 200, 162, 0.05);
+}
+
+html[data-theme='dark'] .modal-bg {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+html[data-theme='dark'] .sidebar-backdrop {
+  background: rgba(0, 0, 0, 0.55);
+}
+
+html[data-theme='dark'] .profile-item-icon {
+  background: var(--surface);
+}
+
+html[data-theme='dark'] .turno-motivo-box {
+  background: var(--surface);
+}
+
+html[data-theme='dark'] .pet-image-container {
+  background: var(--brand-soft);
+}
+
+html[data-theme='dark'] .pet-no-photo {
+  background: var(--brand-soft);
+}
+
+html[data-theme='dark'] .pets-empty-state {
+  background: var(--surface);
+  border-color: var(--line);
+}
+
+html[data-theme='dark'] .pet-card-footer {
+  border-top-color: var(--line);
+}
+
