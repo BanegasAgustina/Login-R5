@@ -2,6 +2,14 @@
 import { readFile } from 'node:fs/promises';
 import { pool } from '../src/config/database.js';
 
+console.log('[OAuth migration] MySQL configuration', {
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
+  database: process.env.DB_NAME,
+  userConfigured: Boolean(process.env.DB_USER),
+  passwordConfigured: Boolean(process.env.DB_PASSWORD),
+});
+
 // MySQL hace commit implícito de DDL. Cada sentencia es repetible y no borra datos;
 // si se interrumpe, se puede volver a ejecutar. No reconstruimos el esquema original.
 try {
@@ -15,7 +23,14 @@ try {
   }
   console.log('Migración OAuth aplicada; usuarios existentes conservados.');
 } catch (error) {
-  console.error('No se pudo aplicar la migración OAuth:', error.code || 'ERROR');
+  console.error('No se pudo aplicar la migración OAuth:', {
+    code: error.code || 'ERROR',
+    message: error.message,
+    errno: error.errno,
+    syscall: error.syscall,
+    address: error.address,
+    port: error.port,
+  });
   process.exitCode = 1;
 } finally {
   await pool.end();
