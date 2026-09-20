@@ -1,3 +1,16 @@
+/**
+ * Cliente HTTP y transporte de sesión.
+ *
+ * Axios toma VITE_API_URL o /api, activa withCredentials y añade Bearer si existe
+ * petcare_token. El interceptor de respuesta quita el token y redirige en ciertos 401.
+ * getErrorMessage transforma errores de red o API en texto.
+ *
+ * Motivo y límites: /auth/login y /auth/me se exceptúan de la redirección global para permitir
+ * errores del formulario y visitantes sin sesión. Las aserciones de tipos de los servicios no
+ * validan respuestas en tiempo de ejecución.
+ *
+ * Guía: docs/BRIEFING_AUTENTICACION_AUTORIZACION_VALIDACIONES.md
+ */
 
 //configura Axios para conectar el frontend con el 
 // backend. Define la URL del servidor, agrega automáticamente 
@@ -14,6 +27,8 @@ const api = axios.create({
   withCredentials: true,
 });
 
+// Todas las llamadas de esta instancia comparten transporte de sesión.
+// La cookie la administra el navegador; Bearer se agrega aquí.
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('petcare_token');
   if (token) config.headers.Authorization = `Bearer ${token}`;

@@ -1,3 +1,14 @@
+/**
+ * Contratos TypeScript.
+ *
+ * User define id, email nullable, rolId, tipo_usuario y mapa userTypes. También contiene Pet,
+ * Appointment, Consulta y tipos administrativos usados por formularios y servicios.
+ *
+ * Motivo y límites: Los tipos ayudan durante compilación; no validan JSON de la red ni conceden
+ * permisos.
+ *
+ * Guía: docs/BRIEFING_AUTENTICACION_AUTORIZACION_VALIDACIONES.md
+ */
 // src/types.ts
 // Define los tipos de datos utilizados en la aplicación, incluyendo usuarios, mascotas, turnos y consultas.
 export type User = {

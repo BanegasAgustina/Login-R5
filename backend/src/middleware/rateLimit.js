@@ -1,3 +1,15 @@
+/**
+ * Límite de intentos.
+ *
+ * loginRateLimit usa un Map por IP: ventana de 15 minutos, 8 solicitudes admitidas y bloqueo al
+ * superar ese número. clearLoginAttempts borra el registro tras login local exitoso.
+ *
+ * Motivo y límites: Reduce intentos repetidos, pero el contador vive en un proceso y se
+ * reinicia con él. No es un límite distribuido entre varias instancias. También se aplica al
+ * inicio OAuth.
+ *
+ * Guía: docs/BRIEFING_AUTENTICACION_AUTORIZACION_VALIDACIONES.md
+ */
 // Este código implementa un límite de intentos de inicio 
 // de sesión para proteger PetCare contra ataques de fuerza bruta. 
 // Guarda los intentos de cada dirección IP y permite como máximo 8 

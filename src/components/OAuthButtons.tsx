@@ -1,3 +1,15 @@
+/**
+ * Botones de proveedores.
+ *
+ * Consulta /auth/providers al montar, limita ids al catálogo de logos y deshabilita proveedores
+ * sin configuración. El clic navega a la URL de inicio. La bandera active evita actualizar
+ * estado tras desmontar.
+ *
+ * Motivo y límites: El frontend no intercambia códigos ni recibe secretos de proveedores. Un
+ * botón habilitado indica configuración presente, no una prueba completa de autenticación.
+ *
+ * Guía: docs/BRIEFING_AUTENTICACION_AUTORIZACION_VALIDACIONES.md
+ */
 // Los hooks consultan disponibilidad; Axios reutiliza la URL de nuestra API.
 import { useEffect, useState } from 'react';
 import api from '../services/api';

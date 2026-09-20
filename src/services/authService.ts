@@ -1,3 +1,13 @@
+/**
+ * Operaciones de autenticación desde UI.
+ *
+ * login, register, getMe, updateMe y logout encapsulan llamadas a /auth y sus tipos de datos.
+ *
+ * Motivo y límites: Separa HTTP de componentes. logout solicita borrar la cookie; quien elimina
+ * petcare_token y actualiza usuario es AuthContext.
+ *
+ * Guía: docs/BRIEFING_AUTENTICACION_AUTORIZACION_VALIDACIONES.md
+ */
 // Servicio para interactuar con los endpoints del backend relacionados
 // con la autenticación de usuarios, incluyendo inicio de sesión, registro,
 // obtención de información del usuario actual y cierre de sesión.
@@ -36,6 +46,8 @@ export const authService = {
     return data;
   },
 // Cierra la sesión del usuario actualmente autenticado, eliminando el token de autenticación.
+  // Aquí solo se solicita el cierre al servidor. AuthContext elimina
+  // el Bearer del almacenamiento y limpia el usuario de React.
   logout: async () => {
     // Si no se borró la cookie, el frontend debe informar el fallo y permitir reintentar.
     await api.post('/auth/logout');

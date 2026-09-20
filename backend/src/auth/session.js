@@ -1,3 +1,14 @@
+/**
+ * Emisión de JWT.
+ *
+ * createSessionToken firma id y rol con JWT_SECRET; JWT_EXPIRES_IN define la duración y el
+ * valor por defecto es 8h.
+ *
+ * Motivo y límites: Centraliza el formato para login local y OAuth. El rol incluido en el token
+ * no es la fuente de autorización: el middleware recupera el estado y rol actuales de MySQL.
+ *
+ * Guía: docs/BRIEFING_AUTENTICACION_AUTORIZACION_VALIDACIONES.md
+ */
 import jwt from 'jsonwebtoken';
 
 // Solo recibe una cuenta recuperada por el backend; nunca req.body ni claims externos.

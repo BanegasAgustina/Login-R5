@@ -1,3 +1,15 @@
+/**
+ * Edición administrativa de usuarios.
+ *
+ * Usa validadores de nombre y email, exige rol y consume el catálogo del servidor. currentUser
+ * permite ocultar acciones sobre la propia cuenta. Gestiona filtros y confirmaciones de
+ * cambios.
+ *
+ * Motivo y límites: El formulario contempla campos ausentes de cuentas OAuth en ciertos casos.
+ * La API comprueba roles, duplicados y acciones sobre el propio usuario.
+ *
+ * Guía: docs/BRIEFING_AUTENTICACION_AUTORIZACION_VALIDACIONES.md
+ */
 // La pantalla del administrador que permite consultar, filtrar y ver en detalle
 //  todos los usuarios de la clínica veterinaria.
 import { useEffect, useState } from 'react';

@@ -1,3 +1,14 @@
+/**
+ * Suite histórica de API.
+ *
+ * Requiere TEST_* de administrador, veterinario y cliente y una API activa. Prueba health,
+ * login y accesos mediante fetch y aserciones propias.
+ *
+ * Motivo y límites: Es una herramienta de integración dependiente del entorno y datos, no una
+ * verificación estática. No se ejecutó contra Railway durante esta tarea.
+ *
+ * Guía: docs/BRIEFING_AUTENTICACION_AUTORIZACION_VALIDACIONES.md
+ */
 // Script automatizado de pruebas para verificar endpoints y seguridad de PetCare
 import '../src/config/database.js';
 const API_URL = process.env.TEST_API_URL || `${process.env.BACKEND_URL || 'http://localhost:3000'}/api`;

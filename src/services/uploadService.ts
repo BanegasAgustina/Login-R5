@@ -1,3 +1,14 @@
+/**
+ * Envío multipart de imágenes.
+ *
+ * uploadImage incorpora el archivo en FormData bajo imagen, llama /uploads/mascota y devuelve
+ * la URL relativa.
+ *
+ * Motivo y límites: Mantiene separado el transporte de la selección y previsualización. El
+ * backend verifica tamaño, formato y firma.
+ *
+ * Guía: docs/BRIEFING_AUTENTICACION_AUTORIZACION_VALIDACIONES.md
+ */
 import api from './api';
 
 export const uploadService = {

@@ -1,3 +1,15 @@
+/**
+ * Catálogo y configuración OAuth.
+ *
+ * providers define Google, GitHub, Facebook, Discord, Twitch y X, sus endpoints, scopes y
+ * variantes PKCE/Basic. origin valida orígenes; frontendOrigin, backendOrigin y callbackURL
+ * construyen destinos. configured y environmentStatus informan presencia de variables.
+ *
+ * Motivo y límites: Los destinos salen de configuración del servidor. configured indica que hay
+ * valores requeridos, no que el proveedor los haya aceptado ni que MySQL funcione.
+ *
+ * Guía: docs/BRIEFING_AUTENTICACION_AUTORIZACION_VALIDACIONES.md
+ */
 // Catálogo cerrado: el navegador nunca elige endpoints, secretos o redirect URLs.
 // Client ID identifica la aplicación; Client Secret solo se usa entre servidores.
 export function providers() {

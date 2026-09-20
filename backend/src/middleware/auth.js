@@ -1,3 +1,16 @@
+/**
+ * Comprobación de identidad y permisos.
+ *
+ * authMiddleware prioriza Bearer sobre cookie, verifica firma y vencimiento, exige un id entero
+ * positivo y consulta la cuenta activa. Para escrituras con cookie exige Origin exacto.
+ * allowRoles permite solo los tipos indicados.
+ *
+ * Motivo y límites: Consultar la cuenta en cada solicitud hace efectivos cambios de rol o
+ * desactivaciones. El catch actual responde 401 también ante errores de consulta: ese resultado
+ * no distingue una caída de DB de una sesión inválida.
+ *
+ * Guía: docs/BRIEFING_AUTENTICACION_AUTORIZACION_VALIDACIONES.md
+ */
 // jsonwebtoken permite verificar la firma y vigencia de cada JWT recibido.
 import jwt from 'jsonwebtoken';
 // OAuth usa una cookie HttpOnly; el login tradicional conserva Authorization.
@@ -9,6 +22,8 @@ import { hasUserType } from '../auth/userTypes.js';
 // Protege una ruta: agrega el usuario autenticado a req.user antes de continuar.
 export async function authMiddleware(req, res, next) {
   // El formato esperado es: Authorization: Bearer <token>.
+  // Bearer tiene prioridad si también existe cookie. Por eso el frontend
+  // quita un token anterior al volver de OAuth.
   const bearer = req.headers.authorization?.split(' ')[1];
   const token = bearer || readCookie(req, sessionCookie);
 
@@ -31,6 +46,8 @@ export async function authMiddleware(req, res, next) {
       return res.status(401).json({ message: 'Sesión inválida o cuenta inactiva.' });
     }
     return next();
+  // También llegan aquí errores de MySQL: este 401 no diferencia por sí solo
+  // una caída de la base de una sesión vencida.
   } catch {
     return res.status(401).json({ message: 'Sesión inválida o vencida.' });
   }

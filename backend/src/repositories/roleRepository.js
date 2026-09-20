@@ -1,3 +1,14 @@
+/**
+ * Catálogo de roles.
+ *
+ * listRoles consulta roles; getUserTypes arma el mapa por nombre; requireUserTypeId exige un
+ * rol configurado; roleExists verifica un id recibido.
+ *
+ * Motivo y límites: La base conserva la autoridad sobre el catálogo. El registro necesita
+ * resolver Cliente y la administración valida que el rol elegido exista.
+ *
+ * Guía: docs/BRIEFING_AUTENTICACION_AUTORIZACION_VALIDACIONES.md
+ */
 import { pool } from '../config/database.js';
 import { USER_TYPE_NAMES } from '../auth/userTypes.js';
 

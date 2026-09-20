@@ -1,3 +1,14 @@
+/**
+ * Selección y validación previa de imágenes.
+ *
+ * handleFileChange llama validateImageFile, crea una URL temporal y notifica onFileSelect.
+ * handleRemove elimina selección. Los efectos sincronizan initialUrl y liberan ObjectURL.
+ *
+ * Motivo y límites: Evita subir un archivo que ya incumple reglas visibles y libera memoria de
+ * las previsualizaciones. El componente no realiza el POST ni verifica bytes de imagen.
+ *
+ * Guía: docs/BRIEFING_AUTENTICACION_AUTORIZACION_VALIDACIONES.md
+ */
 // Componente de carga de imágenes con previsualización y validación.
 //es el componente encargado de seleccionar, validar, previsualizar, 
 // cambiar y eliminar imágenes dentro de la interfaz.

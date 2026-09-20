@@ -1,3 +1,14 @@
+/**
+ * Transporte de operaciones administrativas.
+ *
+ * Obtiene roles, resumen, usuarios, mascotas y turnos; edita usuario, cambia estado y elimina.
+ * updateUsuario traduce rolId de frontend a rol_id de API.
+ *
+ * Motivo y límites: Centraliza el contrato y filtros. No decide si el usuario está autorizado
+ * ni valida por sí mismo el contenido.
+ *
+ * Guía: docs/BRIEFING_AUTENTICACION_AUTORIZACION_VALIDACIONES.md
+ */
 // Servicio para interactuar con los endpoints 
 // del backend relacionados con la administración de usuarios, mascotas y turnos.
 import api from './api';

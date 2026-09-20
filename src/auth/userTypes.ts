@@ -1,3 +1,14 @@
+/**
+ * Roles en la interfaz.
+ *
+ * USER_TYPES y UserType describen claves de política. hasUserType y hasAnyUserType comparan
+ * tipo_usuario con el mapa userTypes recibido.
+ *
+ * Motivo y límites: No se hardcodean ids de MySQL. Estas funciones deciden presentación y
+ * navegación; la API debe volver a comprobar el permiso.
+ *
+ * Guía: docs/BRIEFING_AUTENTICACION_AUTORIZACION_VALIDACIONES.md
+ */
 import type { User } from '../types';
 
 // Claves de la política de la API. Ningún ID de rol se define en el navegador.

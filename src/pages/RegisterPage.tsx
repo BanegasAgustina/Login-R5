@@ -1,3 +1,15 @@
+/**
+ * Formulario de alta.
+ *
+ * Usa mode onTouched y validadores de nombre, apellido, email, teléfono y contraseña; watch
+ * compara confirmPassword. submit recorta datos, llama register, muestra 409 sobre email y
+ * redirige a login tras éxito.
+ *
+ * Motivo y límites: confirmPassword se usa en el formulario y no se envía en el payload
+ * construido. Crear la cuenta no entrega JWT ni inicia sesión automáticamente.
+ *
+ * Guía: docs/BRIEFING_AUTENTICACION_AUTORIZACION_VALIDACIONES.md
+ */
 // Página de registro de nuevos usuarios, con validación de campos y manejo de errores.
 import { useState } from 'react';
 import { isAxiosError } from 'axios';
@@ -46,6 +58,8 @@ export default function RegisterPage() {
   if (loading) return <PageState type="loading" />;
   if (usuario) return <Navigate to="/" replace />;
 
+  // handleSubmit invoca submit tras validar. confirmPassword se comprueba
+  // en el formulario pero no se envía en el payload construido aquí.
   const submit = async (data: RegisterData) => {
     try {
       setError('');

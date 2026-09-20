@@ -1,3 +1,16 @@
+/**
+ * Configuración y pool MySQL.
+ *
+ * fromPublicUrl interpreta MYSQL_PUBLIC_URL. databaseConfig toma los campos de URL presentes y
+ * usa DB_* como alternativa; establece timeout y límite de conexiones. pool reutiliza
+ * conexiones. checkDatabaseConnection abre conexión directa y ejecuta SELECT 1.
+ *
+ * Motivo y límites: Crear el objeto pool no prueba autenticación. Una consulta real es
+ * necesaria. La configuración influye en sesiones, permisos y OAuth porque estos consultan
+ * MySQL; no se incluyen valores secretos en este briefing.
+ *
+ * Guía: docs/BRIEFING_AUTENTICACION_AUTORIZACION_VALIDACIONES.md
+ */
 import mysql from 'mysql2/promise';
 import './environment.js';
 

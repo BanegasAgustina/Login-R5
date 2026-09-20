@@ -1,3 +1,14 @@
+/**
+ * Transporte de turnos y consultas.
+ *
+ * Expone consultas, dashboard, veterinarios y turnos, además de creación, cancelación y
+ * actualización de estado. La acción se tipa como confirmar, completar o cancelar.
+ *
+ * Motivo y límites: El tipo restringe llamadas escritas en TypeScript, pero Express valida otra
+ * vez porque una petición externa puede enviar cualquier texto.
+ *
+ * Guía: docs/BRIEFING_AUTENTICACION_AUTORIZACION_VALIDACIONES.md
+ */
 // Este archivo define un servicio para manejar las operaciones 
 // relacionadas con los turnos y consultas en la aplicación.
 

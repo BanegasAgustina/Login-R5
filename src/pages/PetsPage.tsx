@@ -1,3 +1,15 @@
+/**
+ * Formulario de mascotas.
+ *
+ * Combina validatePetName, campos obligatorios, catálogo de especies/razas e ImageUpload. save
+ * sube la foto seleccionada, construye payload y elige crear o actualizar. La eliminación
+ * requiere confirmación visual.
+ *
+ * Motivo y límites: La UI reúne datos; la API comprueba rol y pertenencia. La foto se sube en
+ * una petición separada de la escritura de mascota.
+ *
+ * Guía: docs/BRIEFING_AUTENTICACION_AUTORIZACION_VALIDACIONES.md
+ */
 //es la pantalla donde el usuario puede ver, agregar, editar y eliminar sus mascotas registradas, 
 // así como actualizar su información y fotografías.
 import { useEffect, useState } from 'react';

@@ -1,3 +1,14 @@
+/**
+ * Aplicación del esquema OAuth.
+ *
+ * Lee backend/migrations/001_oauth.sql, verifica textos de las dos tablas esperadas, divide
+ * sentencias y las ejecuta con pool; finalmente cierra el pool.
+ *
+ * Motivo y límites: Modifica esquema y no es una prueba de lectura. El archivo SQL referenciado
+ * no está presente en este checkout al preparar el briefing; no se ejecutó ni se reconstruyó.
+ *
+ * Guía: docs/BRIEFING_AUTENTICACION_AUTORIZACION_VALIDACIONES.md
+ */
 // fs/url leen exclusivamente nuestra migración; el pool usa backend/.env.
 import { readFile } from 'node:fs/promises';
 import { pool } from '../src/config/database.js';

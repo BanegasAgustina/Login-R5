@@ -1,3 +1,16 @@
+/**
+ * Autorización y validaciones administrativas.
+ *
+ * router.use exige sesión y rol Administrador para todo el router. Valida ids, nombre,
+ * apellido, email, rol_id, estado_id, filtros y ordenación. Verifica roles existentes, emails
+ * duplicados y evita autoeliminación o autodesactivación en sus rutas correspondientes.
+ *
+ * Motivo y límites: La lista de ordenaciones aceptadas selecciona fragmentos SQL propios. Los
+ * valores de filtros usan parámetros. HTTP 400 indica datos inválidos, 404 ausencia y 409
+ * conflictos; ocultar botones en UI no sustituye estos controles.
+ *
+ * Guía: docs/BRIEFING_AUTENTICACION_AUTORIZACION_VALIDACIONES.md
+ */
 import { USER_TYPES } from '../auth/userTypes.js';
 import { Router } from 'express';
 //este archivo es el encargado de conectar el panel de administración 
@@ -39,6 +52,8 @@ const validate = (req, res, next) => {
 // Todas las rutas de este router requieren:
 // 1. Que el usuario esté autenticado.
 // 2. Que tenga el rol de "Administrador".
+// La barrera cubre todos los endpoints que se declaran después.
+// Primero se recupera la identidad y luego se comprueba el rol vigente.
 router.use(authMiddleware, allowRoles(USER_TYPES.ADMIN));
 
 router.get('/roles', async (_req, res, next) => {

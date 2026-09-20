@@ -1,3 +1,17 @@
+/**
+ * Registro, login y perfil.
+ *
+ * register normaliza email, verifica duplicados, genera bcrypt con coste 12 y crea un Cliente.
+ * login busca una cuenta activa, compara el hash, limpia intentos y emite JWT. me y updateMe
+ * trabajan con req.user.id. logout elimina la cookie y verifica Origin cuando existe esa
+ * cookie.
+ *
+ * Motivo y límites: El controlador coordina repositorio, sesión y respuesta pública. Una cuenta
+ * OAuth con password_hash NULL no puede usar login local. El registro devuelve confirmación, no
+ * inicia sesión automáticamente.
+ *
+ * Guía: docs/BRIEFING_AUTENTICACION_AUTORIZACION_VALIDACIONES.md
+ */
 // bcrypt compara y crea hashes seguros de contraseñas.
 //contiene las funciones principales de autenticación de PetCare. 
 // Permite registrar nuevos usuarios, iniciar y cerrar sesión, consultar

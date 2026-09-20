@@ -1,3 +1,15 @@
+/**
+ * Mantenimiento de contraseñas demo.
+ *
+ * Recibe dos contraseñas por argumentos, exige longitud mínima 8, calcula bcrypt con coste 10 y
+ * actualiza las cuentas demo por email.
+ *
+ * Motivo y límites: Cambia credenciales reales de esas cuentas. Su regla y coste difieren del
+ * registro normal; se documenta pero no se ejecuta. bcrypt genera hashes, no cifrado
+ * reversible.
+ *
+ * Guía: docs/BRIEFING_AUTENTICACION_AUTORIZACION_VALIDACIONES.md
+ */
 //sirve para actualizar las contraseñas de 
 // las cuentas de demostración de PetCare. Recibe 
 // las nuevas contraseñas desde la línea de comandos, 

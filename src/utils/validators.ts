@@ -1,3 +1,15 @@
+/**
+ * Reglas reutilizables de formularios.
+ *
+ * validatePersonName, validatePetName, validateEmail, validatePhone, validatePassword y
+ * validateImageFile devuelven texto o null. getPasswordStrength devuelve score, etiqueta,
+ * porcentaje y checks.
+ *
+ * Motivo y límites: Son validaciones de experiencia de usuario. El servidor vuelve a validar la
+ * entrada; estas funciones no se importan en Express y las reglas pueden diferir.
+ *
+ * Guía: docs/BRIEFING_AUTENTICACION_AUTORIZACION_VALIDACIONES.md
+ */
 // Expresiones regulares y reglas de validación reutilizables en PetCare
 
 // Nombre de persona: letras con acentos en español, espacios, apóstrofes y guiones. Sin números ni símbolos raros.
@@ -52,6 +64,8 @@ export function validatePetName(val?: string): string | null {
 /**
  * Valida el formato y dominio de un email.
  */
+// Esta regla comprueba estructura, no DNS, existencia del buzón
+// ni propiedad del correo por parte de la persona.
 export function validateEmail(val?: string): string | null {
   if (!val || !val.trim()) return 'El email es obligatorio.';
   const clean = val.trim();
@@ -94,6 +108,8 @@ export type PasswordStrength = {
 /**
  * Calcula la fuerza de una contraseña y retorna métricas accesibles.
  */
+// El porcentaje resume checks locales, no mide entropía.
+// El servidor conserva su propia validación.
 export function getPasswordStrength(password: string): PasswordStrength {
   const p = password || '';
   const checks = {

@@ -1,3 +1,16 @@
+/**
+ * Validación de imágenes en el servidor.
+ *
+ * createStorage genera nombres UUID y crea directorio al subir. fileFilter limita extensión y
+ * MIME; Multer limita tamaño a 5 MB. isImageSignature revisa bytes iniciales JPEG/PNG/WebP.
+ * handleUpload descarta archivos vacíos o firma incompatible y devuelve URL.
+ *
+ * Motivo y límites: La extensión y el MIME del cliente no bastan por sí solos. Comprobar firma
+ * suma un control, pero no equivale a decodificar por completo una imagen. POST /mascota exige
+ * sesión.
+ *
+ * Guía: docs/BRIEFING_AUTENTICACION_AUTORIZACION_VALIDACIONES.md
+ */
 import { Router } from 'express';
 import multer from 'multer';
 import path from 'path';

@@ -1,3 +1,16 @@
+/**
+ * Rutas y validación de acceso local.
+ *
+ * registerValidation encadena trim, obligatoriedad, longitudes y reglas de nombre, email,
+ * teléfono y contraseña. updateProfileValidation admite cambios parciales. validate devuelve el
+ * primer error con HTTP 400. Las rutas llaman a register, login, me, updateMe y logout.
+ *
+ * Motivo y límites: Separa el contrato HTTP del trabajo con usuarios. Login exige email y
+ * contraseña presente; no aplica requisitos de creación a una contraseña existente.
+ * confirmPassword es opcional en la API y el formulario lo compara antes de enviar.
+ *
+ * Guía: docs/BRIEFING_AUTENTICACION_AUTORIZACION_VALIDACIONES.md
+ */
 import { Router } from 'express';
 import { body, validationResult } from 'express-validator';
 import { register, login, me, updateMe, logout } from '../controllers/authController.js';
@@ -16,6 +29,8 @@ const NAME_REGEX = /^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s'-]+$/;
 const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 const WEAK_PASSWORDS = ['12345678', '123456789', 'password', 'qwerty', '123456', 'petcare2026', 'admin1234'];
 
+// Estas reglas transforman y comprueban datos antes del controlador. validate
+// detiene el flujo cuando express-validator registró errores.
 const registerValidation = [
   body('nombre')
     .trim()
@@ -88,6 +103,8 @@ const registerValidation = [
   validate,
 ];
 
+// Campo ausente y campo vacío son distintos en una actualización parcial.
+// Estas reglas no repiten todos los límites de longitud del registro.
 const updateProfileValidation = [
   body('nombre')
     .optional()

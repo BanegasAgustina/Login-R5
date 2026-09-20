@@ -1,3 +1,15 @@
+/**
+ * Entrada y medidor de contraseña.
+ *
+ * forwardRef integra el input con React Hook Form. handleChange conserva texto para calcular
+ * getPasswordStrength y propaga onChange. El botón alterna visibilidad y el medidor es
+ * opcional.
+ *
+ * Motivo y límites: El medidor comunica reglas al usuario; no genera hashes ni cifra datos.
+ * bcrypt se ejecuta en backend.
+ *
+ * Guía: docs/BRIEFING_AUTENTICACION_AUTORIZACION_VALIDACIONES.md
+ */
 import { forwardRef, useState } from 'react';
 import { Eye, EyeOff, ShieldCheck, ShieldAlert } from 'lucide-react';
 import { getPasswordStrength } from '../utils/validators';

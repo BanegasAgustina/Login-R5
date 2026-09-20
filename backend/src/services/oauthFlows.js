@@ -1,3 +1,17 @@
+/**
+ * Intentos OAuth de un solo uso.
+ *
+ * randomSecret produce valores aleatorios; hash usa SHA-256 hexadecimal y challenge SHA-256
+ * base64url para PKCE. createFlow guarda hashes de state/browser, verifier y nonce, con
+ * vencimiento de 10 minutos. consumeFlow verifica formato, proveedor y navegador dentro de una
+ * transacción.
+ *
+ * Motivo y límites: SELECT FOR UPDATE y DELETE consumen el intento atómicamente.
+ * timingSafeEqual compara hashes. La limpieza elimina intentos vencidos; verifier y nonce se
+ * guardan como valores, no como los hashes de state/browser.
+ *
+ * Guía: docs/BRIEFING_AUTENTICACION_AUTORIZACION_VALIDACIONES.md
+ */
 // crypto genera secretos impredecibles y hashes; el pool persiste intentos breves.
 import { randomBytes, createHash, timingSafeEqual } from 'node:crypto';
 import { pool } from '../config/database.js';
@@ -50,6 +64,8 @@ export async function createFlow(provider, pkce, database = pool) {
 // Un callback vencido, repetido, de otro proveedor o de otro navegador se rechaza.
 export async function consumeFlow(provider, state, browser, database = pool) {
   if (typeof state !== 'string' || !/^[\w-]{43}$/.test(state) || !/^[\w-]{43}$/.test(browser || '')) throw new Error('OAUTH_STATE');
+  // Una conexión reservada mantiene bloqueo, consumo y commit en la misma
+  // transacción; release la devuelve al pool al terminar.
   const connection = await database.getConnection();
   try {
     await connection.beginTransaction();

@@ -1,3 +1,15 @@
+/**
+ * Formulario y acciones sobre turnos.
+ *
+ * Detecta Veterinario con hasUserType, carga listados y ofrece acciones por estado. El
+ * formulario exige mascota, veterinario, fecha, hora y motivo. Los servicios crean, cancelan o
+ * cambian estado.
+ *
+ * Motivo y límites: Los campos requeridos del formulario no prueban disponibilidad horaria ni
+ * pertenencia. Las reglas de transición y acceso se deciden nuevamente en petRoutes.
+ *
+ * Guía: docs/BRIEFING_AUTENTICACION_AUTORIZACION_VALIDACIONES.md
+ */
 import { USER_TYPES, hasUserType } from '../auth/userTypes';
 // Pantalla de turnos para clientes y veterinarios, con listado, filtros, acciones y modales.
 import { useEffect, useState } from 'react';

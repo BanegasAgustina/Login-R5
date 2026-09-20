@@ -1,3 +1,16 @@
+/**
+ * Orden de middlewares y routers.
+ *
+ * Configura trust proxy, cabeceras, CORS con credenciales y JSON hasta 100kb. Monta authRoutes
+ * antes de oauthRoutes en /api/auth, además de administración, imágenes y rutas de negocio.
+ * Incluye health, 404 y error central.
+ *
+ * Motivo y límites: El orden permite que /login, /register y /me se resuelvan antes de la ruta
+ * dinámica del proveedor. /api/health confirma que responde Express, no comprueba la conexión
+ * MySQL.
+ *
+ * Guía: docs/BRIEFING_AUTENTICACION_AUTORIZACION_VALIDACIONES.md
+ */
 import './config/environment.js';
 import express from 'express';
 import cors from 'cors';

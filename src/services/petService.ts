@@ -1,3 +1,14 @@
+/**
+ * Transporte de mascotas y pacientes.
+ *
+ * Define payloads y llamadas de listado, especies, razas, pacientes, detalle veterinario,
+ * creación, actualización y baja lógica.
+ *
+ * Motivo y límites: Usa el cliente HTTP común para sesión. Los métodos deletePet y
+ * deactivatePet corresponden a endpoints que preservan el historial mediante baja lógica.
+ *
+ * Guía: docs/BRIEFING_AUTENTICACION_AUTORIZACION_VALIDACIONES.md
+ */
 // Servicio para interactuar con los endpoints del backend relacionados
 // con turnos y consultas.
 import api from './api';

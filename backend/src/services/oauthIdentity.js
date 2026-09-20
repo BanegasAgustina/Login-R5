@@ -1,3 +1,16 @@
+/**
+ * Validación de la identidad externa.
+ *
+ * json realiza fetch con timeout de 10 segundos y sin seguir redirects. externalIdentity canjea
+ * code, agrega verifier o Basic según proveedor y transforma el perfil a un formato común.
+ * Google usa jose, JWKS, emisor, audiencia, RS256 y nonce; los demás consultan APIs de perfil.
+ *
+ * Motivo y límites: OAuth access_token sirve para consultar al proveedor, no para autorizar
+ * rutas PetCare. GitHub toma email primario verificado; Discord exige verified para usar email;
+ * X no presupone email. El id final debe ser ASCII imprimible de 1 a 255 caracteres.
+ *
+ * Guía: docs/BRIEFING_AUTENTICACION_AUTORIZACION_VALIDACIONES.md
+ */
 // jose valida firma, emisor, audiencia y vencimiento de ID tokens OIDC de Google.
 // crypto produce appsecret_proof de Meta; el catálogo fija los servidores confiables.
 import { createRemoteJWKSet, jwtVerify } from 'jose';
@@ -30,6 +43,8 @@ export async function externalIdentity(provider, code, flow) {
   const tokens = await json(p.token, { method: 'POST', headers, body });
   if (typeof tokens.access_token !== 'string' || !tokens.access_token) throw new Error('OAUTH_PROVIDER');
   const auth = { Authorization: `Bearer ${tokens.access_token}`, Accept: 'application/json', 'User-Agent': 'PetCare-OAuth' };
+  // Cada proveedor devuelve un perfil distinto; las ramas siguientes lo
+  // adaptan a una identidad común antes de persistir la cuenta local.
   let identity;
   if (provider === 'google') {
     // OIDC agrega autenticación a OAuth: verificamos el ID token, incluido el nonce

@@ -1,3 +1,18 @@
+/**
+ * Permisos por recurso y reglas del negocio.
+ *
+ * getClientId/getVetId traducen usuario a perfil; resolveBreedId busca o crea raza. Las rutas
+ * cubren mascotas, catálogos, pacientes, turnos, consultas y dashboard. Validan ids, nombres,
+ * sexo, peso, raza, foto y acciones. Algunas consultas agregan condiciones de dueño o
+ * veterinario.
+ *
+ * Motivo y límites: Rol y pertenencia son controles distintos. Crear turno comprueba mascota
+ * propia activa y veterinario existente. Las transiciones permitidas se expresan en una tabla.
+ * No todas las rutas tienen exactamente las mismas validaciones: consultar la matriz del
+ * briefing.
+ *
+ * Guía: docs/BRIEFING_AUTENTICACION_AUTORIZACION_VALIDACIONES.md
+ */
 import { USER_TYPES, hasUserType } from '../auth/userTypes.js';
 import { Router } from 'express';
 import { body, param, query, validationResult } from 'express-validator';
@@ -13,6 +28,8 @@ const validate = (req, res, next) => {
 };
 
 // Busca el id interno del cliente usando el id de usuario del JWT.
+// Usuario y cliente tienen ids de tablas distintas. Resolver el perfil
+// permite filtrar mascotas y turnos por su propietario.
 async function getClientId(userId) {
   const [rows] = await pool.query('SELECT id FROM clientes WHERE usuario_id = ?', [userId]);
   return rows[0]?.id;
@@ -441,6 +458,8 @@ router.patch(
       const turno = rows[0];
       if (!turno) return res.status(404).json({ message: 'Turno no encontrado.' });
 
+      // Además del rol se comprueba el estado previo del turno. Esta tabla
+      // expresa qué cambios de estado admite cada acción del negocio.
       const transitions = {
         confirmar: { from: ['Pendiente'], to: 'Confirmado' },
         completar: { from: ['Confirmado', 'Pendiente'], to: 'Completado' },

@@ -1,3 +1,15 @@
+/**
+ * Mapa de rutas protegidas.
+ *
+ * AuthProvider envuelve BrowserRouter. Login y registro son públicos; Layout necesita sesión.
+ * Mascotas requiere Cliente, pacientes y consultas Veterinario, turnos Cliente o Veterinario y
+ * /admin Administrador.
+ *
+ * Motivo y límites: Declara la política de navegación en un lugar. La ruta desconocida redirige
+ * a /; esto no sustituye las políticas de cada endpoint.
+ *
+ * Guía: docs/BRIEFING_AUTENTICACION_AUTORIZACION_VALIDACIONES.md
+ */
 import { USER_TYPES } from './auth/userTypes';
 // src/App.tsx
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';

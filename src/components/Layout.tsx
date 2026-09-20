@@ -1,3 +1,14 @@
+/**
+ * Menú por rol y cierre de sesión.
+ *
+ * NAV contiene las opciones y roles. hasAnyUserType filtra el menú. cerrarSesion espera logout
+ * y muestra error si no puede completar el cierre.
+ *
+ * Motivo y límites: La navegación refleja la sesión compartida. Ocultar una entrada no impide
+ * por sí mismo invocar la API.
+ *
+ * Guía: docs/BRIEFING_AUTENTICACION_AUTORIZACION_VALIDACIONES.md
+ */
 import { USER_TYPES, hasAnyUserType, type UserType } from '../auth/userTypes';
 // Componente de layout principal que incluye la barra lateral, el encabezado móvil
 //  y el área de contenido.

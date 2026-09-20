@@ -1,3 +1,16 @@
+/**
+ * Persistencia de usuarios.
+ *
+ * createUserRepository permite inyectar una conexión o pool. withTypes agrega tipo_usuario y
+ * userTypes. findSessionById, findById y findActiveByEmail tienen proyecciones distintas.
+ * emailExists, createClient y updateProfile gestionan datos con parámetros SQL.
+ *
+ * Motivo y límites: Los placeholders separan datos de SQL. createClient hace dos INSERT
+ * consecutivos sin transacción explícita; no se debe atribuirle la atomicidad de
+ * resolveAccount. updateProfile solo toma nombre, apellido y teléfono.
+ *
+ * Guía: docs/BRIEFING_AUTENTICACION_AUTORIZACION_VALIDACIONES.md
+ */
 import { pool } from '../config/database.js';
 import { getUserTypes, requireUserTypeId } from './roleRepository.js';
 import { USER_TYPES } from '../auth/userTypes.js';
@@ -31,6 +44,8 @@ export function createUserRepository(database = pool) {
       const [rows] = await database.query('SELECT id FROM usuarios WHERE LOWER(TRIM(email)) = ? LIMIT 1', [email]);
       return rows.length > 0;
     },
+    // El servidor resuelve Cliente: el formulario no puede elegir Administrador.
+    // Los dos INSERT siguientes no tienen una transacción explícita.
     async createClient({ nombre, apellido, email, hash, telefono, direccion }) {
       const roleId = await requireUserTypeId(USER_TYPES.CLIENT, database);
       const [result] = await database.query(
@@ -43,6 +58,8 @@ export function createUserRepository(database = pool) {
         [result.insertId, telefono || null, direccion || null]);
       return result.insertId;
     },
+    // La desestructuración limita los campos editables. Las columnas del SQL
+    // se definen aquí y los valores del usuario se pasan como parámetros.
     async updateProfile(id, { nombre, apellido, telefono }) {
       const fields = [];
       const params = [];

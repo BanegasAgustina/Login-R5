@@ -1,3 +1,15 @@
+/**
+ * Formulario de login.
+ *
+ * React Hook Form exige email con patrón y contraseña presente. submit invoca login y dirige al
+ * administrador a /admin. oauthErrors traduce una lista cerrada de códigos; OAuthButtons inicia
+ * acceso externo.
+ *
+ * Motivo y límites: El login no impone la complejidad del registro. El estado submitting evita
+ * envíos simultáneos desde el botón; la autenticación final depende del servidor.
+ *
+ * Guía: docs/BRIEFING_AUTENTICACION_AUTORIZACION_VALIDACIONES.md
+ */
 import { USER_TYPES, hasUserType } from '../auth/userTypes';
 //es la pantalla encargada de autenticar al usuario, validar sus datos y 
 // llevarlo automáticamente a la sección correspondiente según su rol.

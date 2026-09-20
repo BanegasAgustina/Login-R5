@@ -1,3 +1,14 @@
+/**
+ * Acceso visual a páginas.
+ *
+ * Mientras loading muestra PageState; sin usuario redirige a /login. Si recibe role, normaliza
+ * uno o varios tipos y consulta hasAnyUserType antes de mostrar children.
+ *
+ * Motivo y límites: Evita mostrar páginas antes de recuperar sesión. La protección real de los
+ * datos sigue en Express, porque el cliente puede ser modificado.
+ *
+ * Guía: docs/BRIEFING_AUTENTICACION_AUTORIZACION_VALIDACIONES.md
+ */
 import { hasAnyUserType, type UserType } from '../auth/userTypes';
 //es el componente que controla el acceso a las páginas del 
 // frontend según si el usuario está logueado y qué rol tiene.

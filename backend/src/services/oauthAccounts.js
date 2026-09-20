@@ -1,3 +1,16 @@
+/**
+ * Asociación de identidad externa y usuario.
+ *
+ * profile normaliza email, recorta nombres y acepta avatar con prefijo HTTPS. resolveAccount
+ * busca por provider + provider_user_id. Si no existe, comprueba conflicto de email y crea
+ * usuario Cliente, perfil cliente y vínculo en una transacción.
+ *
+ * Motivo y límites: No vincula automáticamente por email. Las cuentas inactivas se rechazan;
+ * una carrera de inserción se resuelve tras rollback consultando la identidad exacta. La cuenta
+ * nueva tiene contraseña local NULL.
+ *
+ * Guía: docs/BRIEFING_AUTENTICACION_AUTORIZACION_VALIDACIONES.md
+ */
 // El pool conserva la misma base MySQL y consultas parametrizadas de PetCare.
 import { pool } from '../config/database.js';
 // Es la misma normalización usada por express-validator en el registro local.
@@ -27,6 +40,8 @@ export async function resolveAccount(provider, identity, database = pool) {
   const data = profile(identity);
   const connection = await database.getConnection();
   try {
+    // Usuario, perfil Cliente y vínculo externo se confirman juntos.
+    // Un fallo antes del commit revierte las escrituras con rollback.
     await connection.beginTransaction();
     const [existing] = await connection.query(
       `SELECT u.*, r.nombre AS rol FROM oauth_accounts o

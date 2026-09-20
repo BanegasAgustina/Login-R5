@@ -1,3 +1,15 @@
+/**
+ * Estado de sesión en React.
+ *
+ * AuthProvider mantiene usuario y loading. Al montar consulta /me; tras oauth=success quita un
+ * Bearer anterior. login guarda petcare_token y usuario. logout espera al servidor y elimina
+ * estado local. useAuth exige estar dentro del proveedor.
+ *
+ * Motivo y límites: React comparte una sola sesión visual entre pantallas. La cookie HttpOnly
+ * requiere intervención del servidor al cerrar sesión; eliminar localStorage no la borra.
+ *
+ * Guía: docs/BRIEFING_AUTENTICACION_AUTORIZACION_VALIDACIONES.md
+ */
 //encargado de gestionar quién está conectado, 
 // iniciar/cerrar sesión y compartir esa información con toda la aplicación.
 import {
@@ -24,6 +36,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [usuario, setUsuario] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // loading permanece activo durante /me para evitar decidir navegación
+  // antes de conocer la sesión del visitante.
   useEffect(() => {
     const theme = localStorage.getItem('petcare_theme') || 'light';
     document.documentElement.dataset.theme = theme;

@@ -1,3 +1,16 @@
+/**
+ * Pruebas de integración OAuth.
+ *
+ * Crea una base con nombre aleatorio, copia estructura de tablas, prepara datos de prueba y
+ * simula proveedores; usa assert y limpia al finalizar. Contiene casos de login, cuentas
+ * externas, state y configuración.
+ *
+ * Motivo y límites: Necesita acceso MySQL y migración disponible. No se ejecutó para comentar
+ * código. Cambia DB_NAME para aislar el pool, pero una MYSQL_PUBLIC_URL presente puede tener
+ * precedencia: revisar aislamiento antes de ejecutarlo.
+ *
+ * Guía: docs/BRIEFING_AUTENTICACION_AUTORIZACION_VALIDACIONES.md
+ */
 // Pruebas de integración en una BD efímera: se copia solo la estructura de cuatro
 // tablas, nunca usuarios reales. node:assert verifica resultados; crypto aísla nombres.
 import assert from 'node:assert/strict';

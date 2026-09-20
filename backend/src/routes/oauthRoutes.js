@@ -1,3 +1,16 @@
+/**
+ * Inicio y callback OAuth.
+ *
+ * GET /providers publica disponibilidad. GET /:provider crea el intento, guarda cookie temporal
+ * y redirige. El callback consume state, valida code, obtiene identidad, resuelve cuenta y
+ * emite cookie con JWT de PetCare. fail limita los códigos de error y redirige al login.
+ *
+ * Motivo y límites: El orden une navegador, proveedor y sesión local. Cache-Control y
+ * Referrer-Policy evitan conservar o reenviar datos del callback. El token externo no se
+ * devuelve al frontend.
+ *
+ * Guía: docs/BRIEFING_AUTENTICACION_AUTORIZACION_VALIDACIONES.md
+ */
 // Express agrupa rutas; JWT mantiene el formato de sesión existente de PetCare.
 import { Router } from 'express';
 import { createSessionToken } from '../auth/session.js';

@@ -1,3 +1,14 @@
+/**
+ * Lectura de identidad actual.
+ *
+ * useAuth aporta usuario; el componente presenta datos personales, rol, estado, teléfono y
+ * fecha. Un email NULL muestra texto explicativo.
+ *
+ * Motivo y límites: Es una pantalla de consulta; no implementa un formulario de edición ni
+ * modifica la sesión.
+ *
+ * Guía: docs/BRIEFING_AUTENTICACION_AUTORIZACION_VALIDACIONES.md
+ */
 //Es la pantalla donde el usuario puede ver sus datos personales, su rol y el estado de su cuenta dentro de PetCare.
 import { Mail, Shield, Calendar, Activity, Phone } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
