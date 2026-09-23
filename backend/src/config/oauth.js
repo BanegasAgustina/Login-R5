@@ -3,7 +3,7 @@
  *
  * providers define Google, GitHub, Facebook, Discord, Twitch y X, sus endpoints, scopes y
  * variantes PKCE/Basic. origin valida orígenes; frontendOrigin, backendOrigin y callbackURL
- * construyen destinos. configured y environmentStatus informan presencia de variables.
+ * construyen destinos. configured informa presencia de variables.
  *
  * Motivo y límites: Los destinos salen de configuración del servidor. configured indica que hay
  * valores requeridos, no que el proveedor los haya aceptado ni que MySQL funcione.
@@ -49,20 +49,6 @@ export const frontendOrigin = () => origin(process.env.CLIENT_URL || 'http://loc
 export const backendOrigin = () => origin(process.env.BACKEND_URL || `http://localhost:${process.env.PORT || 3000}`);
 export const callbackURL = provider => `${backendOrigin()}/api/auth/${provider}/callback`;
 
-export function environmentStatus() {
-  const names = ['GOOGLE', 'GITHUB', 'FACEBOOK', 'DISCORD', 'TWITTER', 'TWITCH'];
-  return Object.fromEntries([
-    ...names.flatMap(name => [
-      [`${name}_CLIENT_ID`, Boolean(process.env[`${name}_CLIENT_ID`])],
-      [`${name}_CLIENT_SECRET`, Boolean(process.env[`${name}_CLIENT_SECRET`])],
-    ]),
-    ['FACEBOOK_GRAPH_VERSION', Boolean(process.env.FACEBOOK_GRAPH_VERSION)],
-    ['JWT_SECRET', Boolean(process.env.JWT_SECRET)],
-    ['CLIENT_URL', Boolean(process.env.CLIENT_URL)],
-    ['BACKEND_URL', Boolean(process.env.BACKEND_URL)],
-  ]);
-}
-
 // Un botón habilitado solo indica configuración presente, no credenciales verificadas.
 export function configured(provider) {
   const p = providers()[provider];
@@ -73,6 +59,5 @@ export function configured(provider) {
     clientSecret: Boolean(process.env[`${p.env}_CLIENT_SECRET`]),
     jwt: Boolean(process.env.JWT_SECRET),
   };
-  console.info('[OAuth configured]', provider, status);
   return status.clientId && status.clientSecret && status.jwt;
 }

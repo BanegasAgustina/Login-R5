@@ -33,7 +33,7 @@ async function json(url, options = {}) {
 
 // Canjeamos el Authorization Code una sola vez. El access token autoriza la lectura
 // del perfil; NO es la sesión de PetCare y se descarta después de obtener identidad.
-export async function externalIdentity(provider, code, flow, diagnostic) {
+export async function externalIdentity(provider, code, flow) {
   const p = providers()[provider];
   const clientId = process.env[`${p.env}_CLIENT_ID`];
   const secret = process.env[`${p.env}_CLIENT_SECRET`];
@@ -43,22 +43,14 @@ export async function externalIdentity(provider, code, flow, diagnostic) {
   else body.set('client_secret', secret);
   if (p.pkce) body.set('code_verifier', flow.verifier);
   if (provider === 'discord') {
-    console.info('[OAuth Discord] TOKEN_CONFIGURATION', { redirect_uri: body.get('redirect_uri') });
     return discordIdentity(p.token, { method: 'POST', headers, body });
   }
-  if (provider === 'facebook') {
-    diagnostic?.step('TOKEN_EXCHANGE', 'authorization_code');
-    diagnostic?.log('token configuration', { redirect_uri: callbackURL(provider),
-      client_id_present: Boolean(clientId), client_secret_present: Boolean(secret), pkce: Boolean(p.pkce) });
-  }
   const tokens = provider === 'facebook'
-    ? await facebookJson(p.token, { method: 'POST', headers, body }, diagnostic)
+    ? await facebookJson(p.token, { method: 'POST', headers, body })
     : await json(p.token, { method: 'POST', headers, body });
   if (typeof tokens.access_token !== 'string' || !tokens.access_token) {
-    if (provider === 'facebook') diagnostic?.details({ reason: 'ACCESS_TOKEN_MISSING' });
     throw new Error('OAUTH_PROVIDER');
   }
-  if (provider === 'facebook') diagnostic?.ok();
   const auth = { Authorization: `Bearer ${tokens.access_token}`, Accept: 'application/json', 'User-Agent': 'PetCare-OAuth' };
   // Cada proveedor devuelve un perfil distinto; las ramas siguientes lo
   // adaptan a una identidad común antes de persistir la cuenta local.
@@ -82,15 +74,10 @@ export async function externalIdentity(provider, code, flow, diagnostic) {
     if (!user) throw new Error('OAUTH_PROVIDER');
     identity = { id: user.id, name: user.display_name, email: user.email, avatar: user.profile_image_url };
   } else if (provider === 'facebook') {
-    diagnostic?.step('PROFILE_REQUEST', 'facebook_me');
     const url = new URL(`https://graph.facebook.com/${process.env.FACEBOOK_GRAPH_VERSION}/me`);
     url.searchParams.set('fields', 'id,name,first_name,last_name,picture');
     url.searchParams.set('appsecret_proof', createHmac('sha256', secret).update(tokens.access_token).digest('hex'));
-    diagnostic?.log('profile fields', { fields: url.searchParams.get('fields') });
-    const user = await facebookJson(url, { headers: auth }, diagnostic);
-    diagnostic?.ok();
-    diagnostic?.step('PROFILE_VALIDATION', 'provider_user_id');
-    diagnostic?.log('profile received', { id_received: Boolean(user.id), name_received: Boolean(user.first_name || user.name), email_received: Boolean(user.email) });
+    const user = await facebookJson(url, { headers: auth });
     // Facebook + id identifica la cuenta (provider_user_id), no el email opcional:
     // id y name bastan; no pedimos email ni dependemos de que Meta lo devuelva.
     identity = { id: user.id, name: user.first_name || user.name, surname: user.last_name, email: user.email ?? null, avatar: user.picture?.data?.url };
@@ -101,9 +88,7 @@ export async function externalIdentity(provider, code, flow, diagnostic) {
   }
   // Solo aceptamos identidades completas del endpoint del proveedor seleccionado.
   if (!identity || typeof identity.id !== 'string' || !/^[\x21-\x7e]{1,255}$/.test(identity.id)) {
-    if (provider === 'facebook') diagnostic?.details({ reason: 'PROVIDER_USER_ID_MISSING_OR_INVALID' });
     throw new Error('OAUTH_PROVIDER');
   }
-  if (provider === 'facebook') diagnostic?.ok({ email_optional: true });
   return identity;
 }

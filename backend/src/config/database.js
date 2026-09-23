@@ -43,16 +43,6 @@ export const databaseConfig = {
   connectionLimit: 10,
 };
 
-console.info('[MySQL config]', {
-  host: databaseConfig.host,
-  port: databaseConfig.port,
-  database: databaseConfig.database,
-  sslEnabled: Boolean(databaseConfig.ssl),
-  connectTimeout: databaseConfig.connectTimeout,
-  userConfigured: Boolean(databaseConfig.user),
-  passwordConfigured: Boolean(databaseConfig.password),
-});
-
 // El pool reutiliza conexiones y evita crear una conexión nueva en cada consulta.
 export const pool = mysql.createPool(databaseConfig);
 

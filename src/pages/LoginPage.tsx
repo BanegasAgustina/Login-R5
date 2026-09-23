@@ -44,7 +44,6 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const [error, setError] = useState(() => {
     const code = new URLSearchParams(window.location.search).get('oauth_error') || '';
-    if (import.meta.env.DEV && code) console.info('[OAuth] frontend error:', code);
     return oauthErrors[code] || '';
   });
   const [submitting, setSubmitting] = useState(false);

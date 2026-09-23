@@ -94,7 +94,7 @@ se detallan en la guía; no se presentan como corregidos por OAuth.
 
 ## Refactorización conservadora
 
-Ver [el informe y la guía de despliegue](docs/REFACTOR.md). `npm test` ejecuta pruebas aisladas sin conectarse a MySQL. La suite histórica `test:oauth` escribe y elimina datos de prueba; `scripts/test-suite.js` requiere una API real y cuentas configuradas. Ninguna forma parte del comando aislado.
+Ver [el informe y la guía de despliegue](docs/REFACTOR.md). `npm test` está configurado para pruebas aisladas, pero las carpetas `tests/` y `backend/tests/` no están presentes en este checkout; no debe interpretarse como una suite validada. La suite histórica `test:oauth` escribe y elimina datos de prueba; `scripts/test-suite.js` requiere una API real y cuentas configuradas. Ninguna forma parte del comando aislado.
 
 La sesión incluye `tipo_usuario` (alias de `usuarios.rol_id`), conserva `rolId` y `rol`, y recibe un catálogo `userTypes` resuelto en el servidor. Bearer y cookies se verifican contra la BD en cada petición protegida.
 
