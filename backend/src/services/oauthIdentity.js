@@ -16,6 +16,8 @@
 import { createRemoteJWKSet, jwtVerify } from 'jose';
 import { createHmac } from 'node:crypto';
 import { providers, callbackURL } from '../config/oauth.js';
+import { facebookJson } from '../utils/facebookDiagnostics.js';
+import { discordIdentity } from './discordIdentity.js';
 
 const googleKeys = createRemoteJWKSet(new URL('https://www.googleapis.com/oauth2/v3/certs'));
 
@@ -31,7 +33,7 @@ async function json(url, options = {}) {
 
 // Canjeamos el Authorization Code una sola vez. El access token autoriza la lectura
 // del perfil; NO es la sesión de PetCare y se descarta después de obtener identidad.
-export async function externalIdentity(provider, code, flow) {
+export async function externalIdentity(provider, code, flow, diagnostic) {
   const p = providers()[provider];
   const clientId = process.env[`${p.env}_CLIENT_ID`];
   const secret = process.env[`${p.env}_CLIENT_SECRET`];
@@ -40,8 +42,23 @@ export async function externalIdentity(provider, code, flow) {
   if (p.basic) headers.Authorization = `Basic ${Buffer.from(`${clientId}:${secret}`).toString('base64')}`;
   else body.set('client_secret', secret);
   if (p.pkce) body.set('code_verifier', flow.verifier);
-  const tokens = await json(p.token, { method: 'POST', headers, body });
-  if (typeof tokens.access_token !== 'string' || !tokens.access_token) throw new Error('OAUTH_PROVIDER');
+  if (provider === 'discord') {
+    console.info('[OAuth Discord] TOKEN_CONFIGURATION', { redirect_uri: body.get('redirect_uri') });
+    return discordIdentity(p.token, { method: 'POST', headers, body });
+  }
+  if (provider === 'facebook') {
+    diagnostic?.step('TOKEN_EXCHANGE', 'authorization_code');
+    diagnostic?.log('token configuration', { redirect_uri: callbackURL(provider),
+      client_id_present: Boolean(clientId), client_secret_present: Boolean(secret), pkce: Boolean(p.pkce) });
+  }
+  const tokens = provider === 'facebook'
+    ? await facebookJson(p.token, { method: 'POST', headers, body }, diagnostic)
+    : await json(p.token, { method: 'POST', headers, body });
+  if (typeof tokens.access_token !== 'string' || !tokens.access_token) {
+    if (provider === 'facebook') diagnostic?.details({ reason: 'ACCESS_TOKEN_MISSING' });
+    throw new Error('OAUTH_PROVIDER');
+  }
+  if (provider === 'facebook') diagnostic?.ok();
   const auth = { Authorization: `Bearer ${tokens.access_token}`, Accept: 'application/json', 'User-Agent': 'PetCare-OAuth' };
   // Cada proveedor devuelve un perfil distinto; las ramas siguientes lo
   // adaptan a una identidad común antes de persistir la cuenta local.
@@ -59,27 +76,34 @@ export async function externalIdentity(provider, code, flow) {
     const user = await json('https://api.github.com/user', { headers: auth });
     const emails = await json('https://api.github.com/user/emails', { headers: auth });
     identity = { id: String(user.id || ''), name: user.name || user.login, email: emails.find(e => e.primary && e.verified)?.email, avatar: user.avatar_url };
-  } else if (provider === 'discord') {
-    const user = await json('https://discord.com/api/v10/users/@me', { headers: auth });
-    identity = { id: user.id, name: user.global_name || user.username, email: user.verified ? user.email : null,
-      avatar: user.avatar ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png` : null };
   } else if (provider === 'twitch') {
     const result = await json('https://api.twitch.tv/helix/users', { headers: { ...auth, 'Client-Id': clientId } });
     const user = result.data?.[0];
     if (!user) throw new Error('OAUTH_PROVIDER');
     identity = { id: user.id, name: user.display_name, email: user.email, avatar: user.profile_image_url };
   } else if (provider === 'facebook') {
+    diagnostic?.step('PROFILE_REQUEST', 'facebook_me');
     const url = new URL(`https://graph.facebook.com/${process.env.FACEBOOK_GRAPH_VERSION}/me`);
-    url.searchParams.set('fields', 'id,first_name,last_name,email,picture');
+    url.searchParams.set('fields', 'id,name,first_name,last_name,picture');
     url.searchParams.set('appsecret_proof', createHmac('sha256', secret).update(tokens.access_token).digest('hex'));
-    const user = await json(url, { headers: auth });
-    identity = { id: user.id, name: user.first_name, surname: user.last_name, email: user.email, avatar: user.picture?.data?.url };
+    diagnostic?.log('profile fields', { fields: url.searchParams.get('fields') });
+    const user = await facebookJson(url, { headers: auth }, diagnostic);
+    diagnostic?.ok();
+    diagnostic?.step('PROFILE_VALIDATION', 'provider_user_id');
+    diagnostic?.log('profile received', { id_received: Boolean(user.id), name_received: Boolean(user.first_name || user.name), email_received: Boolean(user.email) });
+    // Facebook + id identifica la cuenta (provider_user_id), no el email opcional:
+    // id y name bastan; no pedimos email ni dependemos de que Meta lo devuelva.
+    identity = { id: user.id, name: user.first_name || user.name, surname: user.last_name, email: user.email ?? null, avatar: user.picture?.data?.url };
   } else if (provider === 'twitter') {
     // No suponemos acceso al email de X: el ID de /users/me es suficiente.
     const result = await json('https://api.x.com/2/users/me?user.fields=profile_image_url', { headers: auth });
     identity = { id: result.data?.id, name: result.data?.name, avatar: result.data?.profile_image_url };
   }
   // Solo aceptamos identidades completas del endpoint del proveedor seleccionado.
-  if (!identity || typeof identity.id !== 'string' || !/^[\x21-\x7e]{1,255}$/.test(identity.id)) throw new Error('OAUTH_PROVIDER');
+  if (!identity || typeof identity.id !== 'string' || !/^[\x21-\x7e]{1,255}$/.test(identity.id)) {
+    if (provider === 'facebook') diagnostic?.details({ reason: 'PROVIDER_USER_ID_MISSING_OR_INVALID' });
+    throw new Error('OAUTH_PROVIDER');
+  }
+  if (provider === 'facebook') diagnostic?.ok({ email_optional: true });
   return identity;
 }

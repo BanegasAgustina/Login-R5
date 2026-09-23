@@ -19,7 +19,8 @@ export function providers() {
       authorize: 'https://accounts.google.com/o/oauth2/v2/auth', token: 'https://oauth2.googleapis.com/token' },
     github: { name: 'GitHub', env: 'GITHUB', pkce: true, scope: 'read:user user:email',
       authorize: 'https://github.com/login/oauth/authorize', token: 'https://github.com/login/oauth/access_token' },
-    facebook: { name: 'Facebook', env: 'FACEBOOK', scope: 'public_profile email',
+    // Meta rechaza email si no está habilitado; el login básico no necesita ese permiso.
+    facebook: { name: 'Facebook', env: 'FACEBOOK', scope: 'public_profile',
       extraReady: /^v\d+\.\d+$/.test(version || ''),
       authorize: `https://www.facebook.com/${version}/dialog/oauth`, token: `https://graph.facebook.com/${version}/oauth/access_token` },
     discord: { name: 'Discord', env: 'DISCORD', scope: 'identify email',

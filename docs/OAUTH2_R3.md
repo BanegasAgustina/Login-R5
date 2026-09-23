@@ -269,10 +269,41 @@ Fuente: [autorizar OAuth Apps](https://docs.github.com/en/apps/oauth-apps/buildi
 3. App ID → FACEBOOK_CLIENT_ID; App Secret → FACEBOOK_CLIENT_SECRET.
 4. Copiar la versión Graph API asignada a FACEBOOK_GRAPH_VERSION (formato vNN.N).
    Sin versión explícita el botón está deshabilitado; no se inventó una versión.
-5. Scopes public_profile y email. En desarrollo, probar con cuentas autorizadas por
+5. Scope `public_profile` únicamente: no se solicita el permiso `email` para evitar
+   `Invalid Scopes: email` cuando no está habilitado. Los permisos adicionales pueden
+   requerir configuración/revisión en Meta Developers. En desarrollo, probar con cuentas autorizadas por
    rol de app. Para público general revisar modo Live, privacidad, eliminación de
    datos, revisión de permisos y verificaciones que pida Meta.
-6. El ID puede ser específico de la app; cambiar de app Meta no garantiza continuidad.
+6. El identificador estable es `provider = "facebook"` + `provider_user_id` (ID de
+   Facebook), nunca el email. El ID puede ser específico de la app; cambiar de app
+   Meta no garantiza continuidad. No se vinculan cuentas automáticamente por email.
+7. El email puede no estar disponible y se guarda como `NULL`: `id` + `name` bastan
+   para crear la cuenta e iniciar sesión. El avatar también es opcional.
+8. Verificar en Valid OAuth Redirect URIs `${BACKEND_URL}/api/auth/facebook/callback`;
+   con la configuración local de ejemplo: `http://localhost:3000/api/auth/facebook/callback`.
+
+Diagnóstico temporal de Facebook (solo backend): activo fuera de producción;
+`FACEBOOK_OAUTH_DEBUG=false` lo apaga y `FACEBOOK_OAUTH_DEBUG=true` lo activa
+explícitamente en producción. Reiniciar la API y hacer un intento nuevo desde el botón.
+Buscar `[OAuth Facebook] start callback`, `browser_cookie_received` y
+`[OAuth Facebook] FAILED_STAGE:`. Cada request tiene un `attempt` aleatorio para
+agrupar sus logs; no es el state ni el ID de Facebook.
+
+- `STATE_VALIDATION`: distingue cookie ausente, `BROWSER_MISMATCH`, `STATE_EXPIRED`
+  y `STATE_NOT_FOUND` (incluye intentos consumidos o eliminados por la limpieza).
+- `TOKEN_EXCHANGE` / `PROFILE_REQUEST`: status HTTP, tipo y códigos numéricos de
+  Meta, y resumen seguro del mensaje. Nunca imprime respuestas ni mensajes libres.
+- `DATABASE`: operación fallida (flow, búsqueda, usuario, cliente, cuenta OAuth o
+  commit), código MySQL y descripción segura cuando se reconoce el error.
+- `SESSION`: generación JWT y emisión de cookie por separado. `set_session_cookie`
+  confirma que el backend la emitió, no que el navegador la guardó.
+- `REDIRECT`: destino de autorización o retorno exitoso al frontend.
+
+`OAUTH_FAILED` se conserva en `?oauth_error=OAUTH_FAILED`; el frontend no recibe
+detalles técnicos. Un `/api/auth/me` con 401 antes de crear sesión es esperado;
+si ocurre después de `oauth=success`, revisar envío de `petcare_oauth` en el navegador.
+La prueba aislada `node backend/scripts/test-facebook-diagnostics.js` usa HTTP local
+y simula Meta/MySQL; no demuestra una autorización real ni escribe en Railway.
 
 Referencia: [flujo manual Meta](https://developers.facebook.com/docs/facebook-login/guides/advanced/manual-flow/).
 La documentación respondió HTTP 429 a la consulta automatizada durante esta entrega;
